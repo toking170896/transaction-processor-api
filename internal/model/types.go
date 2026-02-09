@@ -7,27 +7,19 @@ const (
 	StateLost State = "lost"
 )
 
-func ParseState(s string) (State, error) {
-	switch s {
-	case string(StateWin):
-		return StateWin, nil
-	case string(StateLost):
-		return StateLost, nil
-	default:
-		return "", ErrInvalidState
-	}
-}
-
-func (s State) String() string {
-	return string(s)
-}
-
 type SourceType string
 
 const (
 	SourceGame    SourceType = "game"
 	SourceServer  SourceType = "server"
 	SourcePayment SourceType = "payment"
+)
+
+type TransactionStatus string
+
+const (
+	StatusProcessed TransactionStatus = "processed"
+	StatusCancelled TransactionStatus = "cancelled"
 )
 
 func ParseSourceType(s string) (SourceType, error) {
@@ -47,9 +39,17 @@ func (s SourceType) String() string {
 	return string(s)
 }
 
-type TransactionStatus string
+func ParseState(s string) (State, error) {
+	switch s {
+	case string(StateWin):
+		return StateWin, nil
+	case string(StateLost):
+		return StateLost, nil
+	default:
+		return "", ErrInvalidState
+	}
+}
 
-const (
-	StatusProcessed TransactionStatus = "processed"
-	StatusCancelled TransactionStatus = "cancelled"
-)
+func (s State) String() string {
+	return string(s)
+}

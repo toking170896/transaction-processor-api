@@ -55,10 +55,7 @@ func (r *TransactionRepositoryImpl) GetTransaction(ctx context.Context, transact
 
 	trans := &model.Transaction{}
 	executor := r.getExecutor(tx...)
-	err := executor.QueryRow(ctx, query, transactionID).Scan(
-		&trans.ID, &trans.TransactionID, &trans.UserID, &trans.SourceType, &trans.State, &trans.Amount, &trans.Status, &trans.CancelledAt, &trans.CreatedAt, &trans.UpdatedAt,
-	)
-
+	err := executor.QueryRow(ctx, query, transactionID).Scan(&trans.ID, &trans.TransactionID, &trans.UserID, &trans.SourceType, &trans.State, &trans.Amount, &trans.Status, &trans.CancelledAt, &trans.CreatedAt, &trans.UpdatedAt)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, model.ErrTransactionNotFound

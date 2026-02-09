@@ -10,5 +10,4 @@ var (
 	ErrInvalidSourceType    = errors.New("invalid source type")
 	ErrUserNotFound         = errors.New("user not found")
 	ErrTransactionNotFound  = errors.New("transaction not found")
-	ErrOptimisticLock       = errors.New("optimistic lock failed")
 )

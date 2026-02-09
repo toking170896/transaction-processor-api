@@ -22,8 +22,8 @@ type UserRepository interface {
 	// GetBalance retrieves the current balance for a user (read-only)
 	GetBalance(ctx context.Context, userID int64, tx ...pgx.Tx) (decimal.Decimal, error)
 
-	// UpdateBalance updates user balance with optimistic locking
-	UpdateBalance(ctx context.Context, userID int64, balance decimal.Decimal, version int, tx pgx.Tx) error
+	// UpdateBalance updates user balance
+	UpdateBalance(ctx context.Context, userID int64, balance decimal.Decimal, tx pgx.Tx) error
 }
 
 // TransactionRepository defines operations for transaction management

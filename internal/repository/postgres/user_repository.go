@@ -43,7 +43,7 @@ func (r *UserRepositoryImpl) GetUserForUpdate(ctx context.Context, userID int64,
 	return user, nil
 }
 
-// GetBalance retrieves the current balance for a user
+// GetBalance get the current balance for a user
 func (r *UserRepositoryImpl) GetBalance(ctx context.Context, userID int64, tx ...pgx.Tx) (decimal.Decimal, error) {
 	query := `SELECT balance FROM users WHERE id = $1`
 	var balance decimal.Decimal
@@ -59,24 +59,25 @@ func (r *UserRepositoryImpl) GetBalance(ctx context.Context, userID int64, tx ..
 	return balance, nil
 }
 
-// UpdateBalance updates user balance with optimistic locking
-func (r *UserRepositoryImpl) UpdateBalance(ctx context.Context, userID int64, balance decimal.Decimal, version int, tx pgx.Tx) error {
+// UpdateBalance update user balance
+func (r *UserRepositoryImpl) UpdateBalance(ctx context.Context, userID int64, balance decimal.Decimal, tx pgx.Tx) error {
 	query := `
         UPDATE users 
         SET balance = $1, version = version + 1, updated_at = NOW()
-        WHERE id = $2 AND version = $3`
+        WHERE id = $2`
 
-	commandTag, err := tx.Exec(ctx, query, balance, userID, version)
+	commandTag, err := tx.Exec(ctx, query, balance, userID)
 	if err != nil {
 		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == "23514" { // check_violation
+		// check if error is constraint violation, CONSTRAINT balance_non_negative CHECK (balance >= 0)
+		if errors.As(err, &pgErr) && pgErr.Code == "23514" {
 			return model.ErrInsufficientBalance
 		}
 		return fmt.Errorf("failed to update balance: %w", err)
 	}
 
 	if commandTag.RowsAffected() == 0 {
-		return model.ErrOptimisticLock
+		return model.ErrUserNotFound
 	}
 	return nil
 }
