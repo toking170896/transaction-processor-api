@@ -131,3 +131,34 @@ make test-e2e
 * Concurrency is tested with E2E tests that send multiple requests at the same time
 
 ---
+
+Here’s a clean, simple **last section** you can copy-paste directly into your README.
+It keeps the language straightforward and avoids heavy or “academic” terms.
+
+---
+
+## Possible extensions
+
+This project focuses on the core transaction flow required by the task.
+In a real production system, the following improvements could be added:
+
+* **API authorization**
+
+  The API currently has no auth layer. In a real system, requests would be authenticated and authorized (for example, API keys or JWTr).
+
+* **More flexible balance handling**
+
+  Balances are handled using `decimal.Decimal`, which works well for fiat currencies.
+  If support e.g. for crypto was required, the balance model
+  could be extended to support different precision rules per currency.
+
+* **Provider separation**
+
+  Requests from different external providers could be isolated by provider ID, with separate rate limits, quotas, or validation rules.
+
+* **Improved monitoring**
+
+  Metrics e.g request counts, failures, processing time and structured alerts
+  could be added to make system behavior easier to observe under load.
+
+---
