@@ -19,10 +19,10 @@ type UserRepository interface {
 	// GetUserForUpdate retrieves a user with row-level lock (must be in transaction)
 	GetUserForUpdate(ctx context.Context, userID int64, tx pgx.Tx) (*model.User, error)
 
-	// GetBalance retrieves the current balance for a user (read-only)
+	// GetBalance get the current balance for a user (read-only)
 	GetBalance(ctx context.Context, userID int64, tx ...pgx.Tx) (decimal.Decimal, error)
 
-	// UpdateBalance updates user balance
+	// UpdateBalance update user balance
 	UpdateBalance(ctx context.Context, userID int64, balance decimal.Decimal, tx pgx.Tx) error
 }
 

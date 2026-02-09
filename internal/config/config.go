@@ -30,7 +30,7 @@ type DatabaseConfig struct {
 	ConnMaxIdleTime time.Duration `env:"DB_CONN_MAX_IDLE_TIME" envDefault:"5m"`
 }
 type WorkerConfig struct {
-	CancellationInterval time.Duration `env:"WORKER_CANCELLATION_INTERVAL" envDefault:"3m"`
+	CancellationInterval time.Duration `env:"WORKER_CANCELLATION_INTERVAL" envDefault:"2m"`
 }
 
 func Load() (*Config, error) {

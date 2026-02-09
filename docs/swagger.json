@@ -1,0 +1,332 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API for processing third-party provider transactions",
+        "title": "Transaction Processor API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/transactions": {
+            "post": {
+                "description": "Process a win/lost transaction from third-party provider",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Process a transaction",
+                "parameters": [
+                    {
+                        "enum": [
+                            "game",
+                            "server",
+                            "payment"
+                        ],
+                        "type": "string",
+                        "description": "Source type",
+                        "name": "Source-Type",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Transaction details",
+                        "name": "transaction",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/transaction-processor_internal_model.TransactionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Already processed",
+                        "schema": {
+                            "$ref": "#/definitions/transaction-processor_internal_model.TransactionResponse"
+                        }
+                    },
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/transaction-processor_internal_model.TransactionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/transaction-processor_internal_model.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/transaction-processor_internal_model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/transactions/user/{id}": {
+            "get": {
+                "description": "Returns a paginated list of transactions for a user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Get user transactions",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 0,
+                        "description": "Offset",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/transaction-processor_internal_model.TransactionListResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/transaction-processor_internal_model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/balance": {
+            "get": {
+                "description": "Returns the current balance for a user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get user balance",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/transaction-processor_internal_model.BalanceResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/transaction-processor_internal_model.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "transaction-processor_internal_model.BalanceResponse": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "type": "string",
+                    "example": "100.50"
+                },
+                "user_id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "transaction-processor_internal_model.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "INSUFFICIENT_BALANCE"
+                },
+                "details": {
+                    "type": "string"
+                },
+                "error": {
+                    "type": "string",
+                    "example": "insufficient balance"
+                }
+            }
+        },
+        "transaction-processor_internal_model.SourceType": {
+            "type": "string",
+            "enum": [
+                "game",
+                "server",
+                "payment"
+            ],
+            "x-enum-varnames": [
+                "SourceGame",
+                "SourceServer",
+                "SourcePayment"
+            ]
+        },
+        "transaction-processor_internal_model.State": {
+            "type": "string",
+            "enum": [
+                "win",
+                "lost"
+            ],
+            "x-enum-varnames": [
+                "StateWin",
+                "StateLost"
+            ]
+        },
+        "transaction-processor_internal_model.Transaction": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "cancelled_at": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "source_type": {
+                    "$ref": "#/definitions/transaction-processor_internal_model.SourceType"
+                },
+                "state": {
+                    "$ref": "#/definitions/transaction-processor_internal_model.State"
+                },
+                "status": {
+                    "$ref": "#/definitions/transaction-processor_internal_model.TransactionStatus"
+                },
+                "transaction_id": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "transaction-processor_internal_model.TransactionListResponse": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "offset": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "transactions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/transaction-processor_internal_model.Transaction"
+                    }
+                }
+            }
+        },
+        "transaction-processor_internal_model.TransactionRequest": {
+            "type": "object",
+            "required": [
+                "amount",
+                "state",
+                "transaction_id"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "string",
+                    "example": "10.15"
+                },
+                "state": {
+                    "type": "string",
+                    "enum": [
+                        "win",
+                        "lost"
+                    ],
+                    "example": "win"
+                },
+                "transaction_id": {
+                    "type": "string",
+                    "example": "550e8400-e29b-41d4-a716-446655440000"
+                }
+            }
+        },
+        "transaction-processor_internal_model.TransactionResponse": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "type": "string",
+                    "example": "110.15"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Transaction processed successfully"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "success"
+                }
+            }
+        },
+        "transaction-processor_internal_model.TransactionStatus": {
+            "type": "string",
+            "enum": [
+                "processed",
+                "cancelled"
+            ],
+            "x-enum-varnames": [
+                "StatusProcessed",
+                "StatusCancelled"
+            ]
+        }
+    }
+}
