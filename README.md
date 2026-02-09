@@ -98,7 +98,7 @@ Run the API locally:
 make run
 ```
 
-This assumes you already have a PostgreSQL database running and your env vars are set correctly (see `internal/config`).
+This assumes you already have a PostgreSQL database running and your env vars are set correctly (see `.env.example`).
 
 ---
 
